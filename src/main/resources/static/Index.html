@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Person API</title>
+</head>
+<body>
+
+<h1>Person API</h1>
+
+<!-- Получить всех -->
+<h2>Получить всех людей</h2>
+
+<button onclick="getAllPersons()">GET /api/person</button>
+
+<pre id="allResult"></pre>
+
+
+<hr>
+
+
+<!-- Получить по ID -->
+<h2>Получить человека по ID</h2>
+
+<input id="getId" type="number" placeholder="ID">
+<button onclick="getPerson()">GET</button>
+
+<pre id="getResult"></pre>
+
+
+<hr>
+
+
+<!-- Создать человека -->
+<h2>Создать человека</h2>
+
+<input id="createName" placeholder="Имя"><br><br>
+<input id="createSecondName" placeholder="Фамилия"><br><br>
+<input id="createPhone" placeholder="+79933706247"><br><br>
+<input id="createEmails" placeholder="email@example.com"><br><br>
+
+<button onclick="createPerson()">POST /api/person</button>
+
+<pre id="createResult"></pre>
+
+
+<hr>
+
+
+<!-- Изменить человека -->
+<h2>Изменить человека</h2>
+
+<input id="updateId" type="number" placeholder="ID"><br><br>
+<input id="updateName" placeholder="Имя"><br><br>
+<input id="updateSecondName" placeholder="Фамилия"><br><br>
+<input id="updatePhone" placeholder="+79933706247"><br><br>
+<input id="updateEmails" placeholder="email@example.com"><br><br>
+
+<button onclick="updatePerson()">PUT /api/person/{id}</button>
+
+<pre id="updateResult"></pre>
+
+
+<hr>
+
+
+<!-- Добавить email -->
+<h2>Добавить email</h2>
+
+<input id="emailPersonId" type="number" placeholder="ID человека"><br><br>
+<input id="newEmail" placeholder="email@example.com"><br><br>
+
+<button onclick="addEmail()">POST /api/person/{id}/emails</button>
+
+<pre id="emailResult"></pre>
+
+
+<hr>
+
+
+<!-- Удалить человека -->
+<h2>Удалить человека</h2>
+
+<input id="deleteId" type="number" placeholder="ID">
+
+<button onclick="deletePerson()">DELETE</button>
+
+<pre id="deleteResult"></pre>
+
+
+<hr>
+
+
+<!-- Удалить email -->
+<h2>Удалить email</h2>
+
+<input id="deleteEmailPersonId" type="number" placeholder="ID человека"><br><br>
+<input id="deleteEmail" placeholder="email@example.com"><br><br>
+
+<button onclick="deleteEmail()">DELETE email</button>
+
+<pre id="deleteEmailResult"></pre>
+
+
+<script>
+
+    const API = "/api/person";
+
+
+    // GET /api/person
+    async function getAllPersons() {
+
+        const response = await fetch(API);
+
+        const data = await response.json();
+
+        document.getElementById("allResult").textContent =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // GET /api/person/{id}
+    async function getPerson() {
+
+        const id = document.getElementById("getId").value;
+
+        const response = await fetch(`${API}/${id}`);
+
+        const data = await response.json();
+
+        document.getElementById("getResult").textContent =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // POST /api/person
+    async function createPerson() {
+
+        const person = {
+            name: document.getElementById("createName").value,
+            secondName: document.getElementById("createSecondName").value,
+            phone: document.getElementById("createPhone").value,
+            emails: [
+                document.getElementById("createEmails").value
+            ]
+        };
+
+        const response = await fetch(API, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(person)
+        });
+
+        const data = await response.json();
+
+        document.getElementById("createResult").textContent =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // PUT /api/person/{id}
+    async function updatePerson() {
+
+        const id = document.getElementById("updateId").value;
+
+        const person = {
+            name: document.getElementById("updateName").value,
+            secondName: document.getElementById("updateSecondName").value,
+            phone: document.getElementById("updatePhone").value,
+            emails: [
+                document.getElementById("updateEmails").value
+            ]
+        };
+
+        const response = await fetch(`${API}/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(person)
+        });
+
+        const data = await response.json();
+
+        document.getElementById("updateResult").textContent =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // POST /api/person/{id}/emails
+    async function addEmail() {
+
+        const id = document.getElementById("emailPersonId").value;
+        const email = document.getElementById("newEmail").value;
+
+        const response = await fetch(`${API}/${id}/emails`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(email)
+        });
+
+        const data = await response.json();
+
+        document.getElementById("emailResult").textContent =
+            JSON.stringify(data, null, 2);
+    }
+
+
+    // DELETE /api/person/{id}
+    async function deletePerson() {
+
+        const id = document.getElementById("deleteId").value;
+
+        const response = await fetch(`${API}/${id}`, {
+            method: "DELETE"
+        });
+
+        const data = await response.text();
+
+        document.getElementById("deleteResult").textContent = data;
+    }
+
+
+    // DELETE /api/person/{id}/emails/{email}
+    async function deleteEmail() {
+
+        const id = document.getElementById("deleteEmailPersonId").value;
+        const email = document.getElementById("deleteEmail").value;
+
+        const response = await fetch(
+            `${API}/${id}/emails/${encodeURIComponent(email)}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const data = await response.json();
+
+        document.getElementById("deleteEmailResult").textContent =
+            JSON.stringify(data, null, 2);
+    }
+
+</script>
+
+</body>
+</html>
